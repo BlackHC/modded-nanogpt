@@ -650,6 +650,15 @@ def get_window_size_blocks(step: int):
     window_size = next_multiple_of_n(1728 * x, n=128)
     return get_window_size_blocks_helper(window_size)
 
+# If compilation is enabled, compile the model
+print0("Compiling model...", console=True)
+print0(f"COMPILATION_ARTIFACTS_PATH: {os.environ['COMPILATION_ARTIFACTS_PATH']}", console=True)
+if os.path.exists(f"{os.environ['COMPILATION_ARTIFACTS_PATH']}/cache_artifacts.bin"):
+    print0("Loading cache artifacts...", console=True)
+    with open(f"{os.environ['COMPILATION_ARTIFACTS_PATH']}/cache_artifacts.bin", "rb") as f:
+        serialized_bytes = f.read()
+    torch.compiler.load_cache_artifacts(serialized_bytes)
+    print0("Cache artifacts loaded", console=True)
 model: nn.Module = torch.compile(model, dynamic=False)
 
 ########################################
@@ -671,6 +680,12 @@ model.load_state_dict(initial_state["model"])
 for opt, opt_state in zip(optimizers, initial_state["optimizers"]):
     opt.load_state_dict(opt_state)
 del train_loader, initial_state
+
+if master_process:
+    seralized_bytes, _ = torch.compiler.save_cache_artifacts()
+    with open(f"{os.environ['COMPILATION_ARTIFACTS_PATH']}/cache_artifacts.bin", "wb") as f:
+        f.write(seralized_bytes)
+    print0("Cache artifacts saved", console=True)
 
 ########################################
 #        Training and validation       #
