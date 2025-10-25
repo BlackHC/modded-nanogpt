@@ -61,7 +61,7 @@ python modal_train.py logs
 
 3. **Resource Allocation**:
    - 8x H100 GPUs
-   - 128GB RAM
+   - 64GB RAM
    - 30-minute timeout
    - Automatic scaling and management
 
@@ -90,7 +90,7 @@ modal app list
 
 1. **Authentication Issues**: Make sure you're authenticated with `modal token new`
 2. **GPU Allocation**: Ensure you have access to H100 instances in your Modal account
-3. **Memory Issues**: The script allocates 128GB RAM; increase if needed
+3. **Memory Issues**: The script allocates 64GB RAM; increase if needed
 4. **Timeout Issues**: Training timeout is set to 30 minutes; adjust as needed
 
 ## Customization
